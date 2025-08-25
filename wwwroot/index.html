@@ -1,0 +1,263 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>API Música - Frontend</title>
+    <style>
+        /* General */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+
+        h2, h3 {
+            color: #34495e;
+        }
+
+        section {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 25px 30px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 40px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        input, button, select {
+            padding: 10px;
+            font-size: 1rem;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            width: 100%;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+
+            input:focus, select:focus {
+                border-color: #3498db;
+                outline: none;
+            }
+
+        button {
+            background-color: #3498db;
+            border: none;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+            button:hover {
+                background-color: #2980b9;
+            }
+
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        li {
+            margin-bottom: 10px;
+            background: #ecf0f1;
+            padding: 12px 15px;
+            border-radius: 6px;
+            box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .album-list {
+            margin-left: 15px;
+            font-style: italic;
+            color: #555;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 20px 10px;
+            }
+
+            section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>🎵 El Rincón del Músico</h1>
+
+    <section>
+        <h2>Artistas</h2>
+        <ul id="lista-artistas"></ul>
+
+        <h3>Agregar nuevo artista</h3>
+        <input type="text" id="input-nombre-artista" placeholder="Nombre del artista" />
+        <button onclick="agregarArtista()">Agregar Artista</button>
+    </section>
+
+    <section>
+        <h2>Álbumes</h2>
+        <ul id="lista-albumes"></ul>
+
+        <h3>Agregar nuevo álbum</h3>
+        <div class="form-group">
+            <label for="input-titulo-album">Título del álbum</label>
+            <input type="text" id="input-titulo-album" placeholder="Título" />
+        </div>
+        <div class="form-group">
+            <label for="input-ano-album">Año</label>
+            <input type="number" id="input-ano-album" placeholder="Año" />
+        </div>
+        <div class="form-group">
+            <label for="select-artista">Artista</label>
+            <select id="select-artista"></select>
+        </div>
+        <button onclick="agregarAlbum()">Agregar Álbum</button>
+    </section>
+
+    <script>
+    const apiBaseUrl = '/api';
+
+    const listaArtistas = document.getElementById('lista-artistas');
+    const listaAlbumes = document.getElementById('lista-albumes');
+    const selectArtista = document.getElementById('select-artista');
+
+    window.onload = () => {
+      cargarArtistas();
+      cargarAlbumes();
+    };
+
+    async function cargarArtistas() {
+      try {
+        const res = await fetch(`${apiBaseUrl}/Artistas`);
+        if (!res.ok) throw new Error('Error al cargar artistas');
+        const data = await res.json();
+        const artistas = data.$values || data;
+
+        listaArtistas.innerHTML = '';
+        selectArtista.innerHTML = '';
+
+        artistas.forEach(artista => {
+          const li = document.createElement('li');
+          li.textContent = artista.nombre;
+
+          const albumes = artista.albumes?.$values || artista.albumes || [];
+          if (albumes.length > 0) {
+            const ulAlbumes = document.createElement('ul');
+            ulAlbumes.classList.add('album-list');
+            albumes.forEach(album => {
+              const liAlbum = document.createElement('li');
+              liAlbum.textContent = `${album.titulo} (${album.año})`;
+              ulAlbumes.appendChild(liAlbum);
+            });
+            li.appendChild(ulAlbumes);
+          }
+
+          listaArtistas.appendChild(li);
+
+          const option = document.createElement('option');
+          option.value = artista.id;
+          option.textContent = artista.nombre;
+          selectArtista.appendChild(option);
+        });
+      } catch (error) {
+        listaArtistas.innerHTML = `<li class="error">${error.message}</li>`;
+      }
+    }
+
+    async function cargarAlbumes() {
+      try {
+        const res = await fetch(`${apiBaseUrl}/Albumes`);
+        if (!res.ok) throw new Error('Error al cargar álbumes');
+        const data = await res.json();
+        const albumes = data.$values || data;
+
+        listaAlbumes.innerHTML = '';
+        albumes.forEach(album => {
+          const li = document.createElement('li');
+          li.textContent = `${album.titulo} (${album.año}) - Artista: ${album.artista?.nombre ?? 'Desconocido'}`;
+          listaAlbumes.appendChild(li);
+        });
+      } catch (error) {
+        listaAlbumes.innerHTML = `<li class="error">${error.message}</li>`;
+      }
+    }
+
+    async function agregarArtista() {
+      const nombre = document.getElementById('input-nombre-artista').value.trim();
+      if (!nombre) {
+        alert('Por favor escribe el nombre del artista');
+        return;
+      }
+
+      try {
+        const res = await fetch(`${apiBaseUrl}/Artistas`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nombre, albumes: [] })
+        });
+        if (!res.ok) throw new Error('Error al agregar artista');
+        document.getElementById('input-nombre-artista').value = '';
+        await cargarArtistas();
+      } catch (error) {
+        alert(error.message);
+      }
+    }
+
+    async function agregarAlbum() {
+      const titulo = document.getElementById('input-titulo-album').value.trim();
+      const año = parseInt(document.getElementById('input-ano-album').value.trim());
+      const artistaId = selectArtista.value;
+
+      if (!titulo || !año || !artistaId) {
+        alert('Por favor completa todos los campos para el álbum');
+        return;
+      }
+
+      try {
+        const res = await fetch(`${apiBaseUrl}/Albumes`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ titulo, año, artistaId: parseInt(artistaId) })
+        });
+        if (!res.ok) throw new Error('Error al agregar álbum');
+        document.getElementById('input-titulo-album').value = '';
+        document.getElementById('input-ano-album').value = '';
+        selectArtista.value = '';
+        await cargarAlbumes();
+        await cargarArtistas();
+      } catch (error) {
+        alert(error.message);
+      }
+    }
+    </script>
+</body>
+</html>

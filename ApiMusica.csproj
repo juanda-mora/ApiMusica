@@ -4,10 +4,8 @@
     <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
-    <ContainerRuntimeIdentifier>win-x64</ContainerRuntimeIdentifier>
-    <EnableSdkContainerDebugging>True</EnableSdkContainerDebugging>
-    <ContainerBaseImage>mcr.microsoft.com/dotnet/aspnet:7.0-nanoserver-1809</ContainerBaseImage>
+    <!-- Opcional: puedes agregar esto si deseas soportar ambos entornos -->
+    <!-- <RuntimeIdentifiers>linux-x64;win-x64</RuntimeIdentifiers> -->
   </PropertyGroup>
 
   <ItemGroup>

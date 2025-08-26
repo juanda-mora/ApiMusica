@@ -3,7 +3,7 @@ FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /app
 
 # Copia los archivos del proyecto y restaura las dependencias
-COPY *.csproj ./
+COPY ./*.csproj ./
 RUN dotnet restore
 
 # Copia todo y compila el proyecto en modo Release
@@ -15,7 +15,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS runtime
 WORKDIR /app
 COPY --from=build /app/out ./
 
-# Expone el puerto que usa la aplicación
+# Expone el puerto que usa la aplicaciÃ³n
 EXPOSE 80
 
 # Comando para ejecutar la app

@@ -54,21 +54,24 @@ if (app.Environment.IsDevelopment())
 // Habilitar CORS con la política "AllowAll"
 app.UseCors("AllowAll");
 
-// Mapear archivos estáticos y fallback **solo si la ruta no comienza con /swagger**
-app.MapWhen(context => !context.Request.Path.StartsWithSegments("/swagger"), builder =>
-{
-    builder.UseDefaultFiles();  // index.html por defecto
-    builder.UseStaticFiles();   // js, css, imágenes
-
-    builder.Run(async context =>
+// Mapear peticiones que **NO** son para /api ni /swagger para servir frontend
+app.MapWhen(context =>
+    !context.Request.Path.StartsWithSegments("/api") &&
+    !context.Request.Path.StartsWithSegments("/swagger"),
+    builder =>
     {
-        context.Response.ContentType = "text/html";
-        await context.Response.SendFileAsync(Path.Combine(app.Environment.WebRootPath, "index.html"));
+        builder.UseDefaultFiles();  // Sirve index.html por defecto
+        builder.UseStaticFiles();   // Sirve js, css, imágenes
+
+        builder.Run(async context =>
+        {
+            context.Response.ContentType = "text/html";
+            await context.Response.SendFileAsync(Path.Combine(app.Environment.WebRootPath, "index.html"));
+        });
     });
-});
 
+// Mapeo de controladores API
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();

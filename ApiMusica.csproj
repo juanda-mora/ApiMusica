@@ -4,8 +4,6 @@
     <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <!-- Opcional: puedes agregar esto si deseas soportar ambos entornos -->
-    <!-- <RuntimeIdentifiers>linux-x64;win-x64</RuntimeIdentifiers> -->
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,7 +13,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.12" />
   </ItemGroup>
 
 </Project>

@@ -1,4 +1,4 @@
-﻿using ApiMusica.Data;
+using ApiMusica.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.FileProviders; // Para archivos estáticos personalizados si hiciera falta
@@ -29,7 +29,6 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-
 // Habilitar CORS para permitir peticiones desde cualquier origen (útil para desarrollo)
 builder.Services.AddCors(options =>
 {
@@ -55,11 +54,18 @@ if (app.Environment.IsDevelopment())
 // Habilitar CORS con la política "AllowAll"
 app.UseCors("AllowAll");
 
-// **Sirve archivos estáticos desde wwwroot**
-app.UseDefaultFiles();  // Permite servir index.html por defecto
-app.UseStaticFiles();   // Permite servir archivos estáticos (js, css, imágenes) desde wwwroot
+// Mapear archivos estáticos y fallback **solo si la ruta no comienza con /swagger**
+app.MapWhen(context => !context.Request.Path.StartsWithSegments("/swagger"), builder =>
+{
+    builder.UseDefaultFiles();  // index.html por defecto
+    builder.UseStaticFiles();   // js, css, imágenes
 
-app.MapFallbackToFile("index.html");  // Esto fuerza que se cargue index.html en la raíz
+    builder.Run(async context =>
+    {
+        context.Response.ContentType = "text/html";
+        await context.Response.SendFileAsync(Path.Combine(app.Environment.WebRootPath, "index.html"));
+    });
+});
 
 app.UseAuthorization();
 

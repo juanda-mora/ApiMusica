@@ -20,7 +20,15 @@ builder.Services.AddControllers()
 
 // Habilitar Swagger (documentación API)
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "ApiMusica",
+        Version = "v1"
+    });
+});
+
 
 // Habilitar CORS para permitir peticiones desde cualquier origen (útil para desarrollo)
 builder.Services.AddCors(options =>

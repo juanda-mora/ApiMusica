@@ -45,11 +45,9 @@ var app = builder.Build();
 // Middleware pipeline
 
 // Usar Swagger en desarrollo
-if (app.Environment.IsDevelopment())
-{
+
     app.UseSwagger();
     app.UseSwaggerUI();
-}
 
 // Habilitar CORS con la política "AllowAll"
 app.UseCors("AllowAll");

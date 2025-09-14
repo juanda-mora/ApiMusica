@@ -25,9 +25,6 @@ jobs:
 
       - name: Run SonarCloud Analysis
         uses: SonarSource/sonarcloud-github-action@v2
-        with:
-          projectKey: juanda-mora_ApiMusica
-          organization: juanda-mora
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 

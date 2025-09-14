@@ -6,27 +6,29 @@ on:
       - sonarq-pruebas
 
 jobs:
-  sonarcloud:
+  build:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v3
         with:
-          node-version: '18'
+          dotnet-version: '7.0.x' # O la versión que uses
 
-      - name: Install dependencies
-        run: |
-          cd ApiMusica
-          npm install
+      - name: Restore dependencies
+        run: dotnet restore
 
-      - name: SonarCloud Scan
+      - name: Build
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Run SonarCloud Analysis
         uses: SonarSource/sonarcloud-github-action@v2
-        with:
-          projectBaseDir: ApiMusica
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_PROJECT_KEY: juanda-mora_ApiMusica
           SONAR_ORGANIZATION: juanda-mora
+
+      - name: Run Tests (opcional)
+        run: dotnet test --no-build --verbosity normal

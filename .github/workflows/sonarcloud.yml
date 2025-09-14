@@ -7,12 +7,9 @@ on:
 
 jobs:
   sonarcloud:
-    name: SonarCloud Scan
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -20,10 +17,12 @@ jobs:
           node-version: '18'
 
       - name: Install dependencies
-        run: npm install
+        run: cd ApiMusica && npm install
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v2
+        with:
+          projectBaseDir: ApiMusica
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_PROJECT_KEY: juanda-mora_ApiMusica

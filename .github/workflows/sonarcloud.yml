@@ -15,7 +15,7 @@ jobs:
       - name: Setup .NET SDK
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '7.0.x' # O la versión que uses
+          dotnet-version: '7.0.x'
 
       - name: Restore dependencies
         run: dotnet restore
@@ -25,10 +25,11 @@ jobs:
 
       - name: Run SonarCloud Analysis
         uses: SonarSource/sonarcloud-github-action@v2
+        with:
+          projectKey: juanda-mora_ApiMusica
+          organization: juanda-mora
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_PROJECT_KEY: juanda-mora_ApiMusica
-          SONAR_ORGANIZATION: juanda-mora
 
-      - name: Run Tests (opcional)
+      - name: Run Tests (optional)
         run: dotnet test --no-build --verbosity normal
